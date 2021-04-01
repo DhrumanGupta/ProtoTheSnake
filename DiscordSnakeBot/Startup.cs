@@ -1,5 +1,6 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+using DiscordSnakeBot.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -31,7 +32,7 @@ namespace DiscordSnakeBot
             ConfigureServices(services);
 
             var provider = services.BuildServiceProvider();
-            provider.GetRequiredService<CommonHandler>();
+            provider.GetRequiredService<CommandHandler>();
 
             await provider.GetRequiredService<StartupService>().StartAsync();
             await Task.Delay(-1);
@@ -48,7 +49,7 @@ namespace DiscordSnakeBot
             {
                 LogLevel = Discord.LogSeverity.Verbose,
                 DefaultRunMode = RunMode.Async,
-                CaseSensitiveCommands = true,
+                CaseSensitiveCommands = false,
                 IgnoreExtraArgs = true
             }))
             .AddSingleton<CommandHandler>()

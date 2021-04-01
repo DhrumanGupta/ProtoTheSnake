@@ -11,4 +11,10 @@
     <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="_config.yml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
