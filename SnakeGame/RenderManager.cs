@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ConsoleSnake
+namespace SnakeGame
 {
     public static class RenderManager
     {

@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using System.Threading.Tasks;
+using SnakeGame;
 
 namespace DiscordSnakeBot.Modules
 {

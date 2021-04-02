@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-namespace ConsoleSnake
+namespace SnakeGame
 {
     public class Grid
     {

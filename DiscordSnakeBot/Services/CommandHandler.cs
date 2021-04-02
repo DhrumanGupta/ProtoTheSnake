@@ -2,60 +2,67 @@
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Addons.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace DiscordSnakeBot.Services
 {
-    public class CommandHandler
+    public class CommandHandler : InitializedService
     {
-        public static IServiceProvider Provider;
-        public static DiscordSocketClient Discord;
-        public static CommandService Commands;
-        public static IConfigurationRoot Config;
+        private static IServiceProvider _provider;
+        private static DiscordSocketClient _client;
+        private static CommandService _service;
+        private static IConfigurationRoot _config;
 
-        public CommandHandler(IServiceProvider provider, DiscordSocketClient discord, CommandService commands, IConfigurationRoot config)
+        public CommandHandler(IServiceProvider provider, DiscordSocketClient client, CommandService service, IConfigurationRoot config)
         {
-            Provider = provider;
-            Discord = discord;
-            Commands = commands;
-            Config = config;
-
-            Discord.Ready += OnReady;
-            Discord.MessageReceived += OnMessageReceived;
+            _provider = provider;
+            _client = client;
+            _service = service;
+            _config = config;
         }
 
-        private Task OnReady()
+        public override async Task InitializeAsync(CancellationToken cancellationToken)
         {
-            Console.WriteLine($"Connected as {Discord.CurrentUser.Username}#{Discord.CurrentUser.Discriminator}");
-            return Task.CompletedTask;
+            _client.MessageReceived += OnMessageReceived;
+            _service.CommandExecuted += OnCommandExecuted;
+            await _service.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
         }
 
         private async Task OnMessageReceived(SocketMessage arg)
         {
-            var msg = arg as SocketUserMessage;
-            if (msg == null || msg.Author.IsBot) { return; }
+            if (!(arg is SocketUserMessage message) || message.Source != MessageSource.User) { return; }
 
-            var context = new SocketCommandContext(Discord, msg);
-
-            var pos = 0;
-            if (msg.HasStringPrefix(Config["prefix"], ref pos) || msg.HasMentionPrefix(Discord.CurrentUser, ref pos))
+            var argPos = 0;
+            if (!message.HasStringPrefix(_config["prefix"], ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos))
             {
-                var result = await Commands.ExecuteAsync(context, pos, Provider);
-                if (!result.IsSuccess)
-                {
-                    var reason = result.Error;
+                return;
+            }
 
-                    if (reason == CommandError.UnknownCommand)
-                    {
+            var context = new SocketCommandContext(_client, message);
+            await _service.ExecuteAsync(context, argPos, _provider);
+        }
+        
+        private async Task OnCommandExecuted(Optional<CommandInfo> command, ICommandContext context, IResult result)
+        {
+            if (command.IsSpecified && !result.IsSuccess)
+            {
+                switch (result.Error)
+                {
+                    case CommandError.UnknownCommand:
                         var embed = new EmbedBuilder()
-                            .WithDescription($"Command {msg} does not exist")
+                            .WithDescription($"Command {command} does not exist")
                             .Build();
                         await context.Channel.SendMessageAsync(null, false, embed);
-                        return;
-                    }
-                    await context.Channel.SendMessageAsync($"To following error occured:\n`{reason}`");
-                    Console.WriteLine(reason);
+                        break;
+                    default:
+                        await context.Channel.SendMessageAsync($"To following error occured:\n`{result.Error}`");
+                        Console.WriteLine(result.Error);
+                        break;
                 }
             }
         }

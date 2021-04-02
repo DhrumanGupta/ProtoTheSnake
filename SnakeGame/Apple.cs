@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace ConsoleSnake
+namespace SnakeGame
 {
     internal class Apple
     {

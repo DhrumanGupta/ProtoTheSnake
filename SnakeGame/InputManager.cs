@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Numerics;
+using SnakeGame;
 
-namespace ConsoleSnake
+namespace SnakeGame
 {
     public static class InputManager
     {

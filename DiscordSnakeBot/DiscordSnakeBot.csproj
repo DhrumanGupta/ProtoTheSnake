@@ -6,15 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Addons.Hosting" Version="3.1.1" />
     <PackageReference Include="Discord.Net" Version="2.3.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="NetEscapades.Configuration.Yaml" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="_config.yml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\SnakeGame\SnakeGame.csproj" />
   </ItemGroup>
 
 </Project>

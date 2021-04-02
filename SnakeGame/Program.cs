@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace ConsoleSnake
+namespace SnakeGame
 {
     class Program
     {
