@@ -4,12 +4,12 @@ using Discord.Commands;
 
 namespace DiscordSnakeBot.Modules
 {
-    public class General : ModuleBase<SocketCommandContext>
+    public class GeneralModule : ModuleBase<SocketCommandContext>
     {
         [Command("help")]
         public async Task HelpAsync()
         {
-            var builder = new EmbedBuilder()
+            var embed = new EmbedBuilder()
                 .WithThumbnailUrl(Context.User.GetAvatarUrl() ?? Context.User.GetDefaultAvatarUrl())
                 .WithTitle("Play Snake Command List")
                 .WithDescription("[GitHub Repository](https://github.com/DaRealBerlm/DiscordSnakeBot)")
@@ -19,11 +19,10 @@ namespace DiscordSnakeBot.Modules
                 
                 .WithColor(new Color(247, 49, 66))
                 .WithFooter($"Requested by: {Context.User.Username}#{Context.User.Discriminator}")
-                .WithCurrentTimestamp();
+                .WithCurrentTimestamp()
+                .Build();
 
-            var embed = builder.Build();
-
-            await Context.Channel.SendMessageAsync(null, false, embed);
+            await ReplyAsync(null, false, embed);
         }
     }
 }

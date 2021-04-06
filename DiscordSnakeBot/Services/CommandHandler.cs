@@ -7,23 +7,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Addons.Hosting;
-using Microsoft.Extensions.Hosting;
+using Infrastructure;
 
 namespace DiscordSnakeBot.Services
 {
     public class CommandHandler : InitializedService
     {
-        private static IServiceProvider _provider;
-        private static DiscordSocketClient _client;
-        private static CommandService _service;
-        private static IConfiguration _config;
+        private readonly IServiceProvider _provider;
+        private readonly DiscordSocketClient _client;
+        private readonly CommandService _service;
+        private readonly IConfiguration _config;
+        private readonly Servers _servers;
 
-        public CommandHandler(IServiceProvider provider, DiscordSocketClient client, CommandService service, IConfiguration config)
+        public CommandHandler(IServiceProvider provider, DiscordSocketClient client, CommandService service, IConfiguration config, Servers servers)
         {
             _provider = provider;
             _client = client;
             _service = service;
             _config = config;
+            _servers = servers;
         }
 
         public override async Task InitializeAsync(CancellationToken cancellationToken)
@@ -40,7 +42,8 @@ namespace DiscordSnakeBot.Services
             if (!(arg is SocketUserMessage message) || message.Source != MessageSource.User) { return; }
 
             var argPos = 0;
-            if (!message.HasStringPrefix(_config["prefix"], ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos))
+            var prefix = await _servers.GetGuildPrefix(((SocketGuildChannel) message.Channel).Guild.Id) ?? "!";
+            if (!message.HasStringPrefix(prefix, ref argPos) && !message.HasMentionPrefix(_client.CurrentUser, ref argPos))
             {
                 return;
             }
@@ -71,10 +74,6 @@ namespace DiscordSnakeBot.Services
                             .WithDescription($"Command {context.Message.Content} does not exist")
                             .Build();
                         await context.Channel.SendMessageAsync(null, false, embed);
-                        break;
-                    default:
-                        await context.Channel.SendMessageAsync($"To following error occured:\n`{result.Error}`");
-                        Console.WriteLine(result.Error);
                         break;
                 }
             }

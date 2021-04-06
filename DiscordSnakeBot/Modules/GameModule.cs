@@ -5,12 +5,12 @@ using SnakeGame;
 
 namespace DiscordSnakeBot.Modules
 {
-    public class Game : ModuleBase<SocketCommandContext>
+    public class GameModule : ModuleBase<SocketCommandContext>
     {
         [Command("start"), Alias("play")]
         public async Task StartAsync()
         {
-            await Context.Channel.SendMessageAsync("Starting");
+            await ReplyAsync("Starting");
         }
     }
 }

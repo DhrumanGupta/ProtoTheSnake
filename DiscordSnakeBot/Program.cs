@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using DiscordSnakeBot.Services;
+using Infrastructure;
 
 namespace DiscordSnakeBot
 {
@@ -53,7 +54,10 @@ namespace DiscordSnakeBot
                 })
                 .ConfigureServices((context, services) =>
                 {
-                    services.AddHostedService<CommandHandler>();
+                    services
+                        .AddHostedService<CommandHandler>()
+                        .AddDbContext<SnakeBotContext>()
+                        .AddSingleton<Servers>();
                 })
                 .UseConsoleLifetime();
 
