@@ -16,9 +16,9 @@ namespace DiscordSnakeBot.Services
         private static IServiceProvider _provider;
         private static DiscordSocketClient _client;
         private static CommandService _service;
-        private static IConfigurationRoot _config;
+        private static IConfiguration _config;
 
-        public CommandHandler(IServiceProvider provider, DiscordSocketClient client, CommandService service, IConfigurationRoot config)
+        public CommandHandler(IServiceProvider provider, DiscordSocketClient client, CommandService service, IConfiguration config)
         {
             _provider = provider;
             _client = client;
@@ -29,6 +29,8 @@ namespace DiscordSnakeBot.Services
         public override async Task InitializeAsync(CancellationToken cancellationToken)
         {
             _client.MessageReceived += OnMessageReceived;
+            _client.ReactionAdded += OnReactionAdded;
+                
             _service.CommandExecuted += OnCommandExecuted;
             await _service.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);
         }
@@ -46,16 +48,27 @@ namespace DiscordSnakeBot.Services
             var context = new SocketCommandContext(_client, message);
             await _service.ExecuteAsync(context, argPos, _provider);
         }
+
+        private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cachedMessage, ISocketMessageChannel channel, SocketReaction reaction)
+        {
+            var message = await cachedMessage.GetOrDownloadAsync();
+            if (message.Source != MessageSource.Bot)
+            {
+                return;
+            }
+            
+            
+        }
         
         private async Task OnCommandExecuted(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
-            if (command.IsSpecified && !result.IsSuccess)
+            if (command.IsSpecified || !result.IsSuccess)
             {
                 switch (result.Error)
                 {
                     case CommandError.UnknownCommand:
                         var embed = new EmbedBuilder()
-                            .WithDescription($"Command {command} does not exist")
+                            .WithDescription($"Command {context.Message.Content} does not exist")
                             .Build();
                         await context.Channel.SendMessageAsync(null, false, embed);
                         break;

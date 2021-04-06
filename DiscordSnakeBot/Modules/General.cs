@@ -4,10 +4,10 @@ using Discord.Commands;
 
 namespace DiscordSnakeBot.Modules
 {
-    public class General : ModuleBase
+    public class General : ModuleBase<SocketCommandContext>
     {
         [Command("help")]
-        public async Task Help()
+        public async Task HelpAsync()
         {
             var builder = new EmbedBuilder()
                 .WithThumbnailUrl(Context.User.GetAvatarUrl() ?? Context.User.GetDefaultAvatarUrl())
