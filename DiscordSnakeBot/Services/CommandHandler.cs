@@ -1,5 +1,6 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+using DiscordSnakeBot.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Reflection;
@@ -7,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Addons.Hosting;
-using Infrastructure;
 
 namespace DiscordSnakeBot.Services
 {

@@ -1,39 +1,47 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace SnakeGame
 {
     public class Game
     {
+        public Game() { }
+
         public Game(int x, int y)
         {
-            _grid = new Grid(x, y);
+            Grid = new Grid(x, y);
         }
+        
+        [Key]
+        public ulong PlayerId { get; set; }
 
-        private Thread _gameLoopThread;
-        private Thread _inputThread;
-
-        private Grid _grid;
+        public Grid Grid { get; set; }
         private bool _isGameRunning = false;
         private Direction _currentDirection;
+        private Thread _gameThread;
+
+        public void InitializeGrid(int x, int y)
+        {
+            Grid ??= new Grid(x, y);
+        }
 
         public void Start()
         {
             if (_isGameRunning) { return; }
-            
+
             _isGameRunning = true;
             _currentDirection = Direction.North;
-
-            _gameLoopThread = new Thread(new ThreadStart(GameLoop));
-            _gameLoopThread.Start();
-
-            _inputThread = new Thread(new ThreadStart(GetInput));
-            _inputThread.Start();
+            
+            _gameThread ??= new Thread(GameLoop);
+            _gameThread.Priority = ThreadPriority.BelowNormal;
+            _gameThread.Start();
         }
 
-        private void GetInput()
+        private void HandleInput()
         {
-            while (!_grid.IsSnakeDead)
+            while (!Grid.IsSnakeDead)
             {
                 Direction newDirection = InputManager.DirectionFromConsoleInput();
                 _currentDirection = InputManager.ValidateDirection(newDirection, _currentDirection);
@@ -44,20 +52,26 @@ namespace SnakeGame
 
         private void GameLoop()
         {
-            while (!_grid.IsSnakeDead)
+            while (!Grid.IsSnakeDead)
             {
-                RenderManager.RenderGrid(_grid);
+                Renderer.RenderGrid(Grid);
 
                 Thread.Sleep(250);
 
-                _grid.Update(_currentDirection);
+                Grid.Update(_currentDirection);
             }
 
             Console.WriteLine("\n");
             Console.WriteLine("Game Over!");
-            Console.WriteLine($"Your Score: {_grid.Score}");
+            Console.WriteLine($"Your Score: {Grid.Score}");
             Console.ReadLine();
         }
+    }
+
+    public class GameData
+    {
+        
+        public int TimeoutMs { get; set; }
     }
 
     public enum Direction

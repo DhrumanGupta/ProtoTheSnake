@@ -5,12 +5,12 @@ using Discord;
 using Discord.Addons.Hosting;
 using Discord.Commands;
 using Discord.WebSocket;
+using DiscordSnakeBot.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using DiscordSnakeBot.Services;
-using Infrastructure;
 
 namespace DiscordSnakeBot
 {
@@ -57,7 +57,8 @@ namespace DiscordSnakeBot
                     services
                         .AddHostedService<CommandHandler>()
                         .AddDbContext<SnakeBotContext>()
-                        .AddSingleton<Servers>();
+                        .AddSingleton<Servers>()
+                        .AddSingleton<Games>();
                 })
                 .UseConsoleLifetime();
 

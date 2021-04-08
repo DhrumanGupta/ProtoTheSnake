@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Infrastructure;
+using DiscordSnakeBot.Infrastructure;
 
 namespace DiscordSnakeBot.Modules
 {

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure
+namespace DiscordSnakeBot.Infrastructure
 {
     public class Servers
     {
@@ -35,7 +35,7 @@ namespace Infrastructure
 
         public async Task<string> GetGuildPrefix(ulong id)
         {
-            var prefix = await _context.Servers
+            var prefix = await _context.Servers.AsQueryable()
                 .Where(x => x.Id == id)
                 .Select(x => x.Prefix)
                 .FirstOrDefaultAsync();

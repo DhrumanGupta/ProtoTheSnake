@@ -7,6 +7,19 @@ namespace SnakeGame
 {
     public class Grid
     {
+        public Grid()
+        {
+            CreateGridData(10, 10);
+            InitializeGridData();
+
+            Vector2 originPos = new Vector2(5, 5);
+
+            _snake = new Snake(originPos);
+
+            _apple = new Apple();
+            SpawnApple();
+        }
+        
         public Grid(int x, int y)
         {
             CreateGridData(x, y);
@@ -30,13 +43,13 @@ namespace SnakeGame
         internal int Y => GridData.GetLength(1);
         internal Vector2 Size => new Vector2(X, Y);
         internal Vector2 SizeInside => new Vector2(X - 2, Y - 2);
-        public BlockType[,] GridData { get; private set; }
+        public BlockType[,] GridData { get; set; }
         public bool IsSnakeDead => _snake.IsDead;
         public int Score => _snake.Positions.Count;
 
         private Vector2[] _boundary;
-        private Snake _snake;
-        private Apple _apple;
+        private readonly Snake _snake;
+        private readonly Apple _apple;
 
         #endregion Variables
 
