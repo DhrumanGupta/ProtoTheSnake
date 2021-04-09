@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-namespace SnakeGame
+namespace DiscordSnakeBot.GameCore
 {
     internal class Snake
     {
@@ -43,7 +43,7 @@ namespace SnakeGame
             return false;
         }
 
-        internal void EatApple()
+        private void EatApple()
         {
             Positions.Add(_tail);
         }

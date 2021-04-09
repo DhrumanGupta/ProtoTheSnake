@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace SnakeGame
+namespace DiscordSnakeBot.GameCore
 {
     internal class Apple
     {

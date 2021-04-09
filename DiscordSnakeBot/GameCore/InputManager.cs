@@ -1,44 +1,24 @@
 ﻿using System;
 using System.Numerics;
-using SnakeGame;
 
-namespace SnakeGame
+namespace DiscordSnakeBot.GameCore
 {
     public static class InputManager
     {
-        internal static Direction DirectionFromConsoleInput()
-        {
-            ConsoleKey input = Console.ReadKey().Key;
-            DeleteInputIfLetter(input);
-            return GetDirectionFromKey(input);
-        }
-
-        private static void DeleteInputIfLetter(ConsoleKey input)
-        {
-            if (input != ConsoleKey.UpArrow && input != ConsoleKey.DownArrow && input != ConsoleKey.LeftArrow && input != ConsoleKey.RightArrow)
-            {
-                Console.Write("\b \b");
-            }
-        }
-
-        private static Direction GetDirectionFromKey(ConsoleKey input)
+        internal static Direction GetDirectionFromEmote(string input)
         {
             switch (input)
             {
-                case ConsoleKey.W:
-                case ConsoleKey.UpArrow:
+                case "⬆":
                     return Direction.North;
 
-                case ConsoleKey.D:
-                case ConsoleKey.RightArrow:
+                case "➡":
                     return Direction.East;
 
-                case ConsoleKey.S:
-                case ConsoleKey.DownArrow:
+                case "⬇":
                     return Direction.South;
 
-                case ConsoleKey.A:
-                case ConsoleKey.LeftArrow:
+                case "⬅":
                     return Direction.West;
 
                 default:

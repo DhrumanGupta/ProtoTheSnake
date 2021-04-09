@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
-namespace SnakeGame
+namespace DiscordSnakeBot.GameCore
 {
     public class Grid
     {
@@ -45,7 +45,7 @@ namespace SnakeGame
         internal Vector2 SizeInside => new Vector2(X - 2, Y - 2);
         public BlockType[,] GridData { get; set; }
         public bool IsSnakeDead => _snake.IsDead;
-        public int Score => _snake.Positions.Count;
+        public int Score => _snake.Positions.Count - 1;
 
         private Vector2[] _boundary;
         private readonly Snake _snake;

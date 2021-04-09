@@ -1,16 +1,17 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Addons.Hosting;
 using Discord.Commands;
 using Discord.WebSocket;
 using DiscordSnakeBot.Infrastructure;
+using DiscordSnakeBot.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using DiscordSnakeBot.Services;
 
 namespace DiscordSnakeBot
 {
@@ -25,7 +26,7 @@ namespace DiscordSnakeBot
                         .SetBasePath(Directory.GetCurrentDirectory())
                         .AddJsonFile("appsettings.json", false, true)
                         .Build();
-
+        
                     x.AddConfiguration(configuration);
                 })
                 .ConfigureLogging(x =>
@@ -37,11 +38,16 @@ namespace DiscordSnakeBot
                 {
                     config.SocketConfig = new DiscordSocketConfig
                     {
-                        LogLevel = LogSeverity.Verbose, 
+                        LogLevel = LogSeverity.Debug,
                         AlwaysDownloadUsers = true,
                         MessageCacheSize = 200,
+                        GatewayIntents = GatewayIntents.Guilds
+                                         | GatewayIntents.GuildMembers
+                                         | GatewayIntents.GuildMessageReactions
+                                         | GatewayIntents.GuildMessages
+                                         | GatewayIntents.GuildWebhooks
                     };
-
+                    
                     config.Token = context.Configuration["token"];
                 })
                 .UseCommandService((context, config) =>
@@ -49,7 +55,7 @@ namespace DiscordSnakeBot
                     config = new CommandServiceConfig()
                     {
                         CaseSensitiveCommands = false,
-                        LogLevel = LogSeverity.Verbose
+                        LogLevel = LogSeverity.Info
                     };
                 })
                 .ConfigureServices((context, services) =>
@@ -61,7 +67,7 @@ namespace DiscordSnakeBot
                         .AddSingleton<Games>();
                 })
                 .UseConsoleLifetime();
-
+        
             var host = builder.Build();
             using (host)
             {
@@ -69,4 +75,4 @@ namespace DiscordSnakeBot
             }
         }
     }
-} 
+}

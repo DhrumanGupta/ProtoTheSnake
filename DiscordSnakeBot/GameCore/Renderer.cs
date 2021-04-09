@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SnakeGame
+namespace DiscordSnakeBot.GameCore
 {
     public static class Renderer
     {
         private static readonly Dictionary<BlockType, string> RenderStringByBlockType = new Dictionary<BlockType, string>()
         {
-            { BlockType.Boundary, "#" },
-            { BlockType.Empty, "." },
-            { BlockType.Snake, "*" },
-            { BlockType.Apple, "\u25EF" }
+            { BlockType.Boundary, ":red_square:" },
+            { BlockType.Empty, ":black_large_square:" },
+            { BlockType.Snake, ":green_circle:" },
+            { BlockType.Apple, ":apple:" }
         };
 
-        public static string RenderGrid(Grid grid)
+        public static string Render(this Grid grid)
         {
             string rendered = string.Empty;
             for (int x = 0; x < grid.X; x++)

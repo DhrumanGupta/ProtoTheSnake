@@ -11,14 +11,13 @@ namespace DiscordSnakeBot.Modules
         {
             var embed = new EmbedBuilder()
                 .WithThumbnailUrl(Context.User.GetAvatarUrl() ?? Context.User.GetDefaultAvatarUrl())
-                .WithTitle("Play Snake Command List")
-                .WithDescription("[GitHub Repository](https://github.com/DaRealBerlm/DiscordSnakeBot)")
+                .WithTitle("Proto the Snake Command List")
                 
                 .AddField($"start", "`New Game`", true)
                 .AddField("leaderboard", "`Server Leaderboard`", true)
                 
                 .WithColor(new Color(247, 49, 66))
-                .WithFooter($"Requested by: {Context.User.Username}#{Context.User.Discriminator}")
+                .AddField("\u200B", "[GitHub Repository](https://github.com/DaRealBerlm/ProtoTheSnake)")
                 .WithCurrentTimestamp()
                 .Build();
 

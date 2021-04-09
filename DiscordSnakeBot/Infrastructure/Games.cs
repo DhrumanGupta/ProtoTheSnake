@@ -1,49 +1,75 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Discord;
-using Microsoft.EntityFrameworkCore;
-using Game = SnakeGame.Game; 
+using Discord.WebSocket;
+using DiscordSnakeBot.GameCore;
+using Game = DiscordSnakeBot.GameCore.Game; 
 
 namespace DiscordSnakeBot.Infrastructure
 {
     public class Games
     {
-        private readonly SnakeBotContext _context;
+        private Dictionary<ulong, Game> _gameByUserId = new Dictionary<ulong, Game>();
 
-        public Games(SnakeBotContext context)
+        public void AddGame(ulong userId, Game game)
         {
-            _context = context;
+            game.OnGameUpdated += HandleGameUpdate;
+            game.OnGameEnded += HandleGameEnded;
+            _gameByUserId.Add(userId, game);
         }
 
-        public async Task AddGameAsync(Game game)
+        public bool HasGame(ulong userId)
         {
-            await _context.Games.AddAsync(game);
-            await _context.SaveChangesAsync();
+            return _gameByUserId.ContainsKey(userId);
         }
 
-        public async Task<Game> GetGame(ulong userId)
+        public bool IsMessageTheirGame(ulong userId, ulong messageId)
         {
-            return await _context.Games.FindAsync(userId);
+            return _gameByUserId[userId].Message.Id == messageId;
         }
 
-        public async Task RemoveGame(Game game)
+        public Game GetGame(ulong userId)
         {
-            try
-            {
-                _context.Games.Remove(game);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            return _gameByUserId[userId];
         }
 
-        public Embed GetEmbed(Game game)
+        public void RemoveGame(ulong userId)
+        {
+            Game game = _gameByUserId[userId];
+            game.OnGameUpdated -= HandleGameUpdate;
+            game.OnGameEnded -= HandleGameEnded;
+            
+            _gameByUserId.Remove(userId);
+        }
+
+        private async Task HandleGameUpdate(Game game)
+        {
+            var level = game.Grid.Render();
+            var embed = GetEmbed(level, game.Player);
+            await game.Message.ModifyAsync(x => x.Embed = embed);
+        }
+
+        private async Task HandleGameEnded(Game game)
+        {
+            Embed embed = new EmbedBuilder()
+                .WithTitle("Game Over!")
+                .WithDescription($"{game.Player.Username}#{game.Player.Discriminator} reached a score of {game.Score}.\nThanks for playing!")
+                .AddField("\u200B", "[GitHub Repository](https://github.com/DaRealBerlm/ProtoTheSnake)")
+                .WithCurrentTimestamp()
+                .Build();
+            await game.Message.ModifyAsync(x => x.Embed = embed);
+            
+            RemoveGame(game.Player.Id);
+        }
+
+        private Embed GetEmbed(string level, SocketUser player)
         {
             EmbedBuilder builder = new EmbedBuilder()
-                .WithTitle("");
+                .WithTitle("Proto the Snake")
+                .WithDescription(level)
+                .WithFooter($"{player.Username}#{player.Discriminator}")
+                .WithCurrentTimestamp();
             return builder.Build();
         }
     }
